@@ -107,7 +107,7 @@ export function ProductOrdersBarChart({ data }: ProductOrdersBarChartProps) {
             <Tooltip content={<CustomTooltip />} />
             <Bar
               dataKey="orders"
-              fill="#8884d8"
+              fill="hsl(var(--primary))"
               radius={[0, 4, 4, 0]}
               barSize={20}
             />

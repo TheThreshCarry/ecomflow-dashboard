@@ -115,37 +115,39 @@ export function ResultsStep({
   
   return (
     <>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Analysis Results</h2>
-        <div className="flex items-center gap-4">
-          <DateRangePicker
-            dateRange={dateRange}
-            onDateRangeChange={setDateRange}
-            minDate={minDate}
-            maxDate={maxDate}
-          />
-          <div className="flex">
-            <Button 
-              onClick={() => exportThresholds('pdf' as ExportFormat)}
-              className="rounded-r-none"
-            >
-              <Printer className="h-4 w-4 mr-2" /> Export Thresholds
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="default" className="px-2 rounded-l-none border-l border-primary-foreground">
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => exportThresholds('text' as ExportFormat)}>
-                  Export as Text
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => exportThresholds('pdf' as ExportFormat)}>
-                  <Printer className="h-4 w-4 mr-2" /> Export as PDF
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+      <div className="sticky top-0 bg-background z-10 pb-4 border-b mb-6">
+        <div className="flex justify-between items-center py-4">
+          <h2 className="text-2xl font-bold">Analysis Results</h2>
+          <div className="flex items-center gap-4">
+            <DateRangePicker
+              dateRange={dateRange}
+              onDateRangeChange={setDateRange}
+              minDate={minDate}
+              maxDate={maxDate}
+            />
+            <div className="flex">
+              <Button 
+                onClick={() => exportThresholds('pdf' as ExportFormat)}
+                className="rounded-r-none"
+              >
+                <Printer className="h-4 w-4 mr-2" /> Export Thresholds
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="default" className="px-2 rounded-l-none border-l border-primary-foreground">
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => exportThresholds('text' as ExportFormat)}>
+                    Export as Text
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => exportThresholds('pdf' as ExportFormat)}>
+                    <Printer className="h-4 w-4 mr-2" /> Export as PDF
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
       </div>
@@ -156,7 +158,7 @@ export function ResultsStep({
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle>Threshold Summary</CardTitle>
-              <CardDescription>Calculated inventory thresholds based on your data</CardDescription>
+              <CardDescription>Calculated inventory thresholds based on your data and configured parameters.</CardDescription>
             </div>
             <CollapsibleTrigger asChild>
               <Button 
@@ -188,9 +190,10 @@ export function ResultsStep({
       </Collapsible>
       
       {/* Key Metrics */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">Key Metrics</h3>
       </div>
+      <p className="text-sm text-muted-foreground mb-4">Essential performance indicators calculated from your inventory and order data.</p>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <MetricCard
           title="Average Daily Orders"
@@ -213,7 +216,7 @@ export function ResultsStep({
           icon={<Truck size={18} />}
           data={ordersData}
           valueExtractor={(item) => Number(item.lead_time_days || 0)}
-          formatValue={(value) => value.toFixed(1)}
+          formatValue={(value) => Math.floor(value).toString()}
           period={periodDays.toString()}
         />
         <MetricCard
@@ -236,7 +239,8 @@ export function ResultsStep({
       </div>
       
       {/* Charts Section Title */}
-      <h3 className="text-xl font-semibold mb-4">Performance Analytics</h3>
+      <h3 className="text-xl font-semibold">Performance Analytics</h3>
+      <p className="text-sm text-muted-foreground mb-4">Visual representation of your inventory movement and order patterns over time.</p>
       
       {/* Chart Row - 2 columns on desktop, 1 column on mobile */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -253,7 +257,8 @@ export function ResultsStep({
       </div>
       
       {/* Product Analysis Row */}
-      <h3 className="text-xl font-semibold mb-4">Product Analysis</h3>
+      <h3 className="text-xl font-semibold">Product Analysis</h3>
+      <p className="text-sm text-muted-foreground mb-4">Breakdown of order distribution by product to identify top performers and sales patterns.</p>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <ProductOrdersPieChart data={filteredOrdersData} />
         <ProductOrdersBarChart data={filteredOrdersData} />

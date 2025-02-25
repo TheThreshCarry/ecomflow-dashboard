@@ -73,9 +73,9 @@ export function ConfigureStep({
   return (
     <TooltipProvider>
       <Card className="mx-auto max-w-3xl">
-        <CardHeader className="flex flex-col items-center justify-between">
+        <CardHeader className="flex flex-col items-center justify-between gap-4">
           <Logo size="large" />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full">
             <div>
               <CardTitle>Step 2: Configure Parameters</CardTitle>
               <CardDescription>

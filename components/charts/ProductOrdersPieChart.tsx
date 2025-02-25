@@ -8,13 +8,16 @@ interface ProductOrdersPieChartProps {
   data: any[];
 }
 
-// Predefined set of colors for the pie chart slices
+// Predefined set of colors for the pie chart slices ( shades of green)
 const COLORS = [
-  "#8884d8", "#83a6ed", "#8dd1e1", "#82ca9d", "#a4de6c", 
-  "#d0ed57", "#ffc658", "#ff8042", "#ff5252", "#ba68c8",
-  "#6a0dad", "#1e90ff", "#32cd32", "#ff4500", "#9370db",
-  "#00ced1", "#ff6347", "#7b68ee", "#3cb371", "#ffa07a"
-];
+  "#008000", // Dark green
+  "#00A000", // Slightly lighter green
+  "#00C000", // Lighter green
+  "#00D000", // Lighter green
+  "#00E000", // Very light green
+  "#00FF00", // Bright green
+]
+  
 
 // Number of individual products to show before grouping into "Others"
 const MAX_PRODUCTS_TO_SHOW = chartConfig.maxProductsToShow;

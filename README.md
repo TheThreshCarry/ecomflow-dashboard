@@ -33,6 +33,7 @@ graph LR
 ### Key Features
 
 - **Data Import**: Upload and validate inventory and order data in CSV format
+- **Mock Data Support**: Load sample data with or without errors for testing and demo purposes
 - **Parameter Configuration**: Adjust lead time, safety stock, and service level settings
 - **Visual Analytics**: Interactive charts showing inventory levels, orders, and product distribution
 - **Dynamic Threshold Calculation**: Real-time threshold updates based on parameter adjustments
@@ -95,7 +96,7 @@ flowchart TD
 The application uses a step-based wizard approach to guide users:
 
 1. **WelcomeStep**: Introduction to the application and required data format
-2. **UploadStep**: CSV upload with validation and error handling
+2. **UploadStep**: CSV upload with validation and error handling, including sample data options for quick testing
 3. **ConfigureStep**: Parameter configuration with real-time updates
 4. **ResultsStep**: Display of results, charts, and export options
 

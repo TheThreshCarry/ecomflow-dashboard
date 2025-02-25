@@ -100,7 +100,7 @@ export function InventoryChart({
             Inventory: {Number(item.inventory_level).toFixed(0)}
           </p>
           <p className="font-medium" style={{ color: getBarColor(leadTime) }}>
-            Lead Time: {leadTime} days
+            Lead Time: {Math.floor(leadTime)} days
             {leadTime <= 2
               ? " (Fast)"
               : leadTime <= 5

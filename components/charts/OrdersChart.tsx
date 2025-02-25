@@ -45,7 +45,7 @@ export function OrdersChart({ data, getBarColor, defaultLeadTime }: OrdersChartP
           {leadTimeDays && (
             <div>
               <p className="text-muted-foreground">
-                Lead Time: {leadTimeDays} days
+                Lead Time: {Math.floor(leadTimeDays)} days
               </p>
               <div
                 className="mt-1 h-2 w-full rounded-full"
