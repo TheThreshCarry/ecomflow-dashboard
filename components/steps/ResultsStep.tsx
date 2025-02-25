@@ -6,7 +6,6 @@ import { OrdersChart } from "@/components/charts/OrdersChart"
 import { InventoryChart } from "@/components/charts/InventoryChart"
 import { ProductOrdersPieChart } from "@/components/charts/ProductOrdersPieChart"
 import { ProductOrdersBarChart } from "@/components/charts/ProductOrdersBarChart"
-import { LeadTimeVariationChart } from "@/components/charts/LeadTimeVariationChart"
 import { StockToSalesRatioChart } from "@/components/charts/StockToSalesRatioChart"
 import { MetricCard } from "@/components/dashboard/MetricCard"
 import { useMemo, useState } from "react"
@@ -286,11 +285,7 @@ export function ResultsStep({
       </div>
 
       {/* New Analytics Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <LeadTimeVariationChart
-          data={filteredOrdersData}
-          getLeadTimeColor={getLeadTimeColor}
-        />
+      <div className="mb-6">
         <StockToSalesRatioChart
           data={filteredOrdersData}
           inventoryData={filteredChartData}

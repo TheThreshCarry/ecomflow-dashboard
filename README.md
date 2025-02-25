@@ -1,5 +1,7 @@
 # Inventory Threshold Optimizer Documentation
 
+**Live Demo:** [https://ecomflow-dashboard.vercel.app/](https://ecomflow-dashboard.vercel.app/)
+
 ## Table of Contents
 
 1. [Introduction](#introduction)
@@ -216,7 +218,7 @@ flowchart TD
 
 ```bash
 # Clone the repository
-git clone -b v1.0 https://github.com/TheThreshCarry/ecomflow-dashboard.git
+git clone -b v1.1 https://github.com/TheThreshCarry/ecomflow-dashboard.git
 
 # Navigate to project directory
 cd inventory-dashboard
