@@ -207,6 +207,12 @@ flowchart TD
 
 ## Installation and Setup
 
+### Requirements
+- Nodejs (using v20.10.0)
+- npm, yarn or bun (using bun@1.0.15)
+
+### Installation Process
+
 ```bash
 # Clone the repository
 git clone -b v1.0 https://github.com/TheThreshCarry/ecomflow-dashboard.git
