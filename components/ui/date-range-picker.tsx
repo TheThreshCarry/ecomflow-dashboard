@@ -47,19 +47,38 @@ export function DateRangePicker({
         from: startOfDay(from),
         to: endOfDay(today)
       })
-    } else if (value === "last30days") {
+    } else if (value === "last3days") {
       const from = addDays(today, -30)
       onDateRangeChange({
         from: startOfDay(from),
         to: endOfDay(today)
       })
-    } else if (value === "lastWeek") {
+    } else if (value === "last7days") {
       const from = addDays(today, -14)
       const to = addDays(today, -7)
       onDateRangeChange({
         from: startOfDay(from),
         to: endOfDay(to)
       })
+    } else if (value === "last30days") {
+      const from = addDays(today, -30)
+      onDateRangeChange({
+        from: startOfDay(from),
+        to: endOfDay(today)
+      })
+    } else if (value === "last60days") {
+      const from = addDays(today, -60)
+      onDateRangeChange({
+        from: startOfDay(from),
+        to: endOfDay(today)
+      })
+    } else if (value === "last90days") {
+      const from = addDays(today, -90)
+      onDateRangeChange({
+        from: startOfDay(from),
+        to: endOfDay(today)
+      })
+
     } else if (value === "all") {
       onDateRangeChange({
         from: minDate ? startOfDay(minDate) : undefined,
@@ -104,9 +123,11 @@ export function DateRangePicker({
                 <SelectValue placeholder="Select range preset" />
               </SelectTrigger>
               <SelectContent position="popper">
-                <SelectItem value="last7days">Last 7 days</SelectItem>
+                <SelectItem value="last3days">Last 3 days</SelectItem>
+                <SelectItem value="lastWeek">Last Week</SelectItem>
                 <SelectItem value="last30days">Last 30 days</SelectItem>
-                <SelectItem value="lastWeek">Previous week</SelectItem>
+                <SelectItem value="last60days">Last 60 days</SelectItem>
+                <SelectItem value="last90days">Last 90 days</SelectItem>
                 <SelectItem value="all">All data</SelectItem>
               </SelectContent>
             </Select>

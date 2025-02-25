@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useDropzone } from "react-dropzone"
-import { Upload, AlertCircle } from "lucide-react"
+import { Upload, AlertCircle, ChevronDown, ChevronUp, SkipForward } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -18,6 +18,8 @@ interface UploadStepProps {
 export function UploadStep({ onBack, onNext, onFileValidated, setError, error }: UploadStepProps) {
   const [fileUploaded, setFileUploaded] = useState(false)
   const [parsedData, setParsedData] = useState<InventoryData[]>([])
+  const [showFullError, setShowFullError] = useState(false)
+  const [rawFile, setRawFile] = useState<File | null>(null)
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
@@ -25,6 +27,7 @@ export function UploadStep({ onBack, onNext, onFileValidated, setError, error }:
     },
     onDrop: async (acceptedFiles) => {
       const file = acceptedFiles[0]
+      setRawFile(file)
       const { data: parsedData, error: parseError } = await CSVController.parseCSV(file)
 
       if (parseError) {
@@ -38,6 +41,47 @@ export function UploadStep({ onBack, onNext, onFileValidated, setError, error }:
       setError("")
     },
   })
+
+  // Function to skip validation errors and process the file anyway
+  const handleSkipErrors = async () => {
+    if (!rawFile) return
+    
+    try {
+      // Force parse the CSV file without strict validation
+      const { data } = await CSVController.parseCSV(rawFile, true)
+      
+      setFileUploaded(true)
+      setParsedData(data)
+      onFileValidated(data)
+      setError("")
+    } catch (err) {
+      setError("Failed to process the file even with validation disabled.")
+    }
+  }
+
+  // Format error message to show limited lines
+  const formatErrorMessage = () => {
+    if (!error) return null
+
+    // Split error message by semicolons to separate individual validation errors
+    const errorLines = error.replace("Validation failed: ", "").split("; ")
+    
+    if (errorLines.length <= 3 || showFullError) {
+      return error
+    }
+    
+    // Show only first 3 error lines if not expanded
+    return (
+      <>
+        {`Validation failed: ${errorLines.slice(0, 3).join("; ")}`}
+        <div className="mt-2">
+          <span className="text-xs text-destructive">
+            ...and {errorLines.length - 3} more errors
+          </span>
+        </div>
+      </>
+    )
+  }
 
   return (
     <Card className="mx-auto max-w-3xl">
@@ -72,8 +116,37 @@ export function UploadStep({ onBack, onNext, onFileValidated, setError, error }:
         {error && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
+            <AlertTitle className="flex justify-between items-center">
+              <span>Error</span>
+              <div className="flex gap-2">
+                {/* Toggle show more/less */}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 px-2 text-xs"
+                  onClick={() => setShowFullError(!showFullError)}
+                >
+                  {showFullError ? (
+                    <>Show Less <ChevronUp className="ml-1 h-3 w-3" /></>
+                  ) : (
+                    <>Show More <ChevronDown className="ml-1 h-3 w-3" /></>
+                  )}
+                </Button>
+                
+                {/* Skip errors button */}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-7 px-2 text-xs"
+                  onClick={handleSkipErrors}
+                >
+                  <SkipForward className="mr-1 h-3 w-3" /> Skip Faulty Fields
+                </Button>
+              </div>
+            </AlertTitle>
+            <AlertDescription>
+              {formatErrorMessage()}
+            </AlertDescription>
           </Alert>
         )}
         
