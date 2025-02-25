@@ -7,9 +7,9 @@ import { InventoryChart } from "@/components/charts/InventoryChart"
 import { ProductOrdersPieChart } from "@/components/charts/ProductOrdersPieChart"
 import { ProductOrdersBarChart } from "@/components/charts/ProductOrdersBarChart"
 import { MetricCard } from "@/components/dashboard/MetricCard"
-import { useMemo, useState, useEffect } from "react"
+import { useMemo, useState } from "react"
 import { ThresholdParams, Thresholds } from "@/lib/types"
-import { Package, ShoppingCart, Truck, Clock, ChevronDown, ChevronUp } from "lucide-react"
+import { Package, ShoppingCart, Truck, Clock, ChevronDown, ChevronUp, Printer } from "lucide-react"
 import { DateRangePicker } from "@/components/ui/date-range-picker"
 import { DateRange } from "react-day-picker"
 import { startOfDay, subDays, endOfDay } from "date-fns"
@@ -129,7 +129,7 @@ export function ResultsStep({
               onClick={() => exportThresholds('pdf' as ExportFormat)}
               className="rounded-r-none"
             >
-              Export Thresholds
+              <Printer className="h-4 w-4 mr-2" /> Export Thresholds
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -142,7 +142,7 @@ export function ResultsStep({
                   Export as Text
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => exportThresholds('pdf' as ExportFormat)}>
-                  Export as PDF
+                  <Printer className="h-4 w-4 mr-2" /> Export as PDF
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

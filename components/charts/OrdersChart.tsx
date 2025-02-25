@@ -1,7 +1,6 @@
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Cell } from "recharts"
 import { ChartCard, ChartContainer, ChartHeader } from "@/components/ui/chart"
 import { CardTitle, CardDescription } from "@/components/ui/card"
-import { useTheme } from "next-themes";
 import { averageTimeSeriesData } from "@/lib/utils";
 import { chartConfig } from "@/lib/chart-config";
 import React, { useMemo } from "react";
@@ -13,8 +12,6 @@ interface OrdersChartProps {
 }
 
 export function OrdersChart({ data, getBarColor, defaultLeadTime }: OrdersChartProps) {
-  const theme = useTheme();
-
   // Process data to ensure orders are numbers, not strings with leading zeros
   // And average out data points if there are too many
   const processedData = useMemo(() => {
@@ -104,6 +101,7 @@ export function OrdersChart({ data, getBarColor, defaultLeadTime }: OrdersChartP
               {processedData.map((entry, index) => (
                 <Cell 
                   key={`cell-${index}`}
+                  fill={`hsl(var(--foreground))`}
                 />
               ))}
             </Bar>

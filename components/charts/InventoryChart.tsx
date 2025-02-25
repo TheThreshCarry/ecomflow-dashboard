@@ -11,11 +11,10 @@ import {
 } from "recharts";
 import { ChartCard, ChartContainer, ChartHeader } from "@/components/ui/chart";
 import { CardTitle, CardDescription } from "@/components/ui/card";
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useTheme } from "next-themes";
 import { averageTimeSeriesData } from "@/lib/utils";
 import { chartConfig } from "@/lib/chart-config";
-import { Thresholds } from "@/lib/types";
 
 interface InventoryChartProps {
   data: any[];
