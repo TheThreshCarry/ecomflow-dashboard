@@ -31,30 +31,45 @@ export function OrdersChart({ data, getBarColor, defaultLeadTime }: OrdersChartP
   const OrdersTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const leadTimeDays = payload[0].payload.lead_time_days;
+      const color =
+        leadTimeDays <= 2
+          ? "green"
+          : leadTimeDays <= 5
+          ? "yellow"
+          : leadTimeDays <= 10
+          ? "orange"
+          : "red";
       return (
         <div className="bg-background/95 border rounded-lg shadow-lg p-3">
           <p className="font-medium">{new Date(label).toLocaleDateString()}</p>
-          <p className="text-primary font-medium">Orders: {Number(payload[0].value).toFixed(0)}</p>
+          <p className="font-medium">
+            Orders: {Number(payload[0].value).toFixed(0)}
+          </p>
           {leadTimeDays && (
             <div>
-              <p className="text-muted-foreground">Lead Time: {leadTimeDays} days</p>
-              <div 
-                className="mt-1 h-2 w-full rounded-full" 
-                style={{ 
-                  backgroundColor: getBarColor(leadTimeDays),
-                  opacity: 0.7
+              <p className="text-muted-foreground">
+                Lead Time: {leadTimeDays} days
+              </p>
+              <div
+                className="mt-1 h-2 w-full rounded-full"
+                style={{
+                  backgroundColor: color,
+                  opacity: 0.7,
                 }}
               />
-              <p className="text-xs mt-1" style={{ color: getBarColor(leadTimeDays) }}>
-                {leadTimeDays <= 2 ? "Fast delivery" : 
-                 leadTimeDays <= 5 ? "Standard delivery" : 
-                 leadTimeDays <= 10 ? "Slower delivery" : 
-                 "Very slow delivery"}
+              <p className="text-xs mt-1" style={{ color: color }}>
+                {leadTimeDays <= 2
+                  ? "Fast delivery"
+                  : leadTimeDays <= 5
+                  ? "Standard delivery"
+                  : leadTimeDays <= 10
+                  ? "Slower delivery"
+                  : "Very slow delivery"}
               </p>
             </div>
           )}
         </div>
-      )
+      );
     }
     return null
   }

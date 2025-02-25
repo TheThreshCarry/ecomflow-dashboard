@@ -32,14 +32,16 @@ export function ThemeToggle() {
   return (
     <div className="flex items-center gap-2">
       <div className="flex items-center gap-2">
-        <Sun className="h-4 w-4 text-amber-500" />
-        <Label htmlFor="theme-toggle" className="cursor-pointer">
-          {theme === "dark" ? "Dark" : "Light"} Mode
-        </Label>
+        {theme === "dark" ? (
+          <Sun className="h-4 w-4 text-foreground" />
+        ) : (
+          <Moon className="h-4 w-4 text-foreground" />
+        )}
       </div>
       <Switch 
         id="theme-toggle" 
         checked={isDarkMode}
+        className="transition-all duration-300"
         onCheckedChange={handleChange}
       />
     </div>
