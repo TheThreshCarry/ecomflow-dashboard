@@ -119,28 +119,6 @@ export function InventoryChart({
     return null;
   };
 
-  // Extract thresholds from the first data point (or use defaults)
-  const thresholds: Thresholds = useMemo(() => {
-    if (!data || data.length === 0) return { 
-      low: 0, 
-      medium: 0, 
-      high: 0,
-      leadTimeDemand: 0,
-      safetyStock: 0,
-      reorderPoint: 0
-    };
-    
-    const firstPoint = data[0];
-    return {
-      low: firstPoint.lowThreshold || 0,
-      medium: firstPoint.mediumThreshold || 0,
-      high: firstPoint.highThreshold || 0,
-      leadTimeDemand: firstPoint.leadTimeDemand || 0,
-      safetyStock: firstPoint.safetyStock || 0,
-      reorderPoint: firstPoint.reorderPoint || 0
-    };
-  }, [data]);
-
   return (
     <ChartCard>
       <ChartHeader>
@@ -165,7 +143,7 @@ export function InventoryChart({
             />
             <YAxis
               domain={[
-                0,
+                Math.min(...data.map((d) => d.inventory_level)) * 0.9,
                 Math.max(...data.map((d) => d.inventory_level)) * 1.1,
               ]}
               label={{
@@ -184,8 +162,8 @@ export function InventoryChart({
                 type="monotone"
                 name="Low Zone"
                 dataKey="lowThreshold"
-                fill="rgba(255, 0, 0)" // Red for low threshold zone
-                fillOpacity={isDarkMode ? 0.1 : 0.2}
+                fill="hsl(var(--destructive))" // Red for low threshold zone
+                fillOpacity={isDarkMode ? 0.1 : 0.3}
                 stroke="none"
                 stackId="1"
               />
@@ -195,8 +173,8 @@ export function InventoryChart({
                 dataKey={(datum) =>
                   datum.mediumThreshold - datum.lowThreshold
                 }
-                fill="rgba(255, 200, 0)" // Yellow for medium threshold zone
-                fillOpacity={isDarkMode ? 0.1 : 0.2}
+                fill="hsl(var(--warning))" // Yellow for medium threshold zone
+                fillOpacity={isDarkMode ? 0.1 : 0.3}
                 stroke="none"
                 stackId="1"
               />
@@ -208,8 +186,8 @@ export function InventoryChart({
                   const maxValue = Math.max(...data.map(d => d.inventory_level)) * 1.1;
                   return maxValue - datum.mediumThreshold;
                 }}
-                fill="rgba(0, 255, 0)" // Green for high threshold zone
-                fillOpacity={isDarkMode ? 0.1 : 0.2}
+                fill="hsl(var(--success))" // Green for high threshold zone
+                fillOpacity={isDarkMode ? 0.1 : 0.3}
                 stroke="none"
                 stackId="1"
               />

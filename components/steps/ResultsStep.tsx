@@ -14,6 +14,13 @@ import { DateRangePicker } from "@/components/ui/date-range-picker"
 import { DateRange } from "react-day-picker"
 import { startOfDay, subDays, endOfDay } from "date-fns"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { ExportFormat } from "@/app/results/page"
 
 interface ResultsStepProps {
   params: ThresholdParams;
@@ -21,7 +28,7 @@ interface ResultsStepProps {
   chartData: any[];
   ordersData: any[];
   onParamChange: (key: keyof ThresholdParams, value: number) => void;
-  exportThresholds: () => void;
+  exportThresholds: (format?: ExportFormat) => void;
   getBarColor: (leadTime: number) => string;
   getLeadTimeColor: (leadTime: number) => string;
 }
@@ -117,9 +124,29 @@ export function ResultsStep({
             minDate={minDate}
             maxDate={maxDate}
           />
-          <Button onClick={exportThresholds}>
-            Export Thresholds
-          </Button>
+          <div className="flex">
+            <Button 
+              onClick={() => exportThresholds('pdf' as ExportFormat)}
+              className="rounded-r-none"
+            >
+              Export Thresholds
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="default" className="px-2 rounded-l-none border-l border-primary-foreground">
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => exportThresholds('text' as ExportFormat)}>
+                  Export as Text
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => exportThresholds('pdf' as ExportFormat)}>
+                  Export as PDF
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
       

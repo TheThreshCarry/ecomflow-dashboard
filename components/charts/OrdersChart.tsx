@@ -33,12 +33,12 @@ export function OrdersChart({ data, getBarColor, defaultLeadTime }: OrdersChartP
       const leadTimeDays = payload[0].payload.lead_time_days;
       const color =
         leadTimeDays <= 2
-          ? "green"
+          ? "hsl(var(--success))"
           : leadTimeDays <= 5
-          ? "yellow"
+          ? "hsl(var(--warning))"
           : leadTimeDays <= 10
-          ? "orange"
-          : "red";
+          ? "hsl(var(--destructive))"
+          : "hsl(var(--destructive))";
       return (
         <div className="bg-background/95 border rounded-lg shadow-lg p-3">
           <p className="font-medium">{new Date(label).toLocaleDateString()}</p>
@@ -77,8 +77,8 @@ export function OrdersChart({ data, getBarColor, defaultLeadTime }: OrdersChartP
   return (
     <ChartCard>
       <ChartHeader>
-        <CardTitle>Daily Orders</CardTitle>
-        <CardDescription>Order volume by day with color-coded lead times</CardDescription>
+        <CardTitle>Orders</CardTitle>
+        <CardDescription>Order volume over the selected period of time</CardDescription>
       </ChartHeader>
       <ChartContainer className="h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
@@ -104,7 +104,6 @@ export function OrdersChart({ data, getBarColor, defaultLeadTime }: OrdersChartP
               {processedData.map((entry, index) => (
                 <Cell 
                   key={`cell-${index}`}
-                  fill={theme.theme === "dark" ? "white": "black"}
                 />
               ))}
             </Bar>
