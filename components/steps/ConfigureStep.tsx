@@ -73,12 +73,14 @@ export function ConfigureStep({
   return (
     <TooltipProvider>
       <Card className="mx-auto max-w-3xl">
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-col items-center justify-between">
+          <Logo size="large" />
           <div className="flex items-center gap-2">
-            <Logo size="small" />
             <div>
               <CardTitle>Step 2: Configure Parameters</CardTitle>
-              <CardDescription>Adjust threshold calculation parameters for your inventory</CardDescription>
+              <CardDescription>
+                Adjust threshold calculation parameters for your inventory
+              </CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -87,7 +89,7 @@ export function ConfigureStep({
             {/* Editable Parameters Section */}
             <div className="bg-background p-4 rounded-lg border border-border">
               <h3 className="font-medium mb-4">Adjustable Parameters:</h3>
-              
+
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="leadTime">Lead Time (days)</Label>
@@ -95,29 +97,34 @@ export function ConfigureStep({
                     id="leadTime"
                     type="number"
                     value={params.leadTime}
-                    onChange={(e) => onParamChange("leadTime", Number(e.target.value))}
+                    onChange={(e) =>
+                      onParamChange("leadTime", Number(e.target.value))
+                    }
                   />
                   <p className="text-sm text-muted-foreground">
-                    The average time it takes to receive inventory after ordering.
+                    The average time it takes to receive inventory after
+                    ordering.
                   </p>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="safetyStock">Safety Stock (%)</Label>
                   <Input
                     id="safetyStock"
                     type="number"
                     value={params.safetyStock}
-                    onChange={(e) => onParamChange("safetyStock", Number(e.target.value))}
+                    onChange={(e) =>
+                      onParamChange("safetyStock", Number(e.target.value))
+                    }
                   />
                   <p className="text-sm text-muted-foreground">
                     Extra inventory maintained to mitigate risk of stockouts.
                   </p>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="serviceLevel">Service Level</Label>
-                  <Select 
+                  <Select
                     onValueChange={handleZScoreChange}
                     defaultValue={params.zScore.toString()}
                   >
@@ -133,93 +140,72 @@ export function ConfigureStep({
                     </SelectContent>
                   </Select>
                   <p className="text-sm text-muted-foreground">
-                    Target service level determines your stockout risk tolerance.
+                    Target service level determines your stockout risk
+                    tolerance.
                   </p>
                 </div>
               </div>
             </div>
-            
-            <Button 
-              onClick={onCalculate} 
-              variant="outline" 
-              className="w-full"
-            >
+
+            <Button onClick={onCalculate} className="w-full">
               Calculate Thresholds
             </Button>
-            
+
             <Separator className="my-4" />
-            
+
             {/* Read-only Calculated Values Section */}
             <div className="bg-muted/50 p-4 rounded-lg mt-4">
               <h3 className="font-medium mb-4">Calculated Values:</h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  Average Daily Sales
-                </div>
+                <div>Average Daily Sales</div>
                 <div className="font-medium flex items-center">
                   {formatNumber(params.averageDailySales)}
                   <InfoTooltip content="Average number of units sold per day, calculated from your historical data." />
                 </div>
-                
-                <div>
-                  Demand Std Deviation
-                </div>
+
+                <div>Demand Std Deviation</div>
                 <div className="font-medium flex items-center">
                   {formatNumber(params.demandStdDev)}
                   <InfoTooltip content="Statistical measure of variability in daily sales. Higher values indicate more unpredictable demand." />
                 </div>
-                
-                <div>
-                  Service Level
-                </div>
+
+                <div>Service Level</div>
                 <div className="font-medium flex items-center">
                   {getServiceLevel(params.zScore)}
                   <InfoTooltip content="Probability of not having a stockout during lead time. Higher values mean fewer stockouts but higher inventory costs." />
                 </div>
-                
-                <div>
-                  Lead Time Demand
-                </div>
+
+                <div>Lead Time Demand</div>
                 <div className="font-medium flex items-center">
                   {formatNumber(thresholds.leadTimeDemand)}
                   <InfoTooltip content="Expected total demand during the lead time period (Average Daily Sales × Lead Time)." />
                 </div>
-                
-                <div>
-                  Safety Stock
-                </div>
+
+                <div>Safety Stock</div>
                 <div className="font-medium flex items-center">
                   {formatNumber(thresholds.safetyStock)}
                   <InfoTooltip content="Buffer stock to protect against variability in demand during lead time. Calculated using standard deviation and service level." />
                 </div>
-                
-                <div>
-                  Reorder Point
-                </div>
+
+                <div>Reorder Point</div>
                 <div className="font-medium flex items-center">
                   {formatNumber(thresholds.reorderPoint)}
                   <InfoTooltip content="Inventory level at which a new order should be placed. Equals Lead Time Demand + Safety Stock." />
                 </div>
-                
-                <div>
-                  Low Threshold
-                </div>
+
+                <div>Low Threshold</div>
                 <div className="font-medium flex items-center">
                   {formatNumber(thresholds.low)}
                   <InfoTooltip content="Critical inventory level. When stock falls below this point, order immediately to avoid stockouts." />
                 </div>
-                
-                <div>
-                  Medium Threshold
-                </div>
+
+                <div>Medium Threshold</div>
                 <div className="font-medium flex items-center">
                   {formatNumber(thresholds.medium)}
                   <InfoTooltip content="Warning inventory level. When stock falls below this point, prepare to place orders soon." />
                 </div>
-                
-                <div>
-                  High Threshold
-                </div>
+
+                <div>High Threshold</div>
                 <div className="font-medium flex items-center">
                   {formatNumber(thresholds.high)}
                   <InfoTooltip content="Caution inventory level. When stock falls below this point, monitor inventory and forecast demand." />
@@ -227,20 +213,15 @@ export function ConfigureStep({
               </div>
             </div>
           </div>
-          
+
           <div className="flex justify-between">
-            <Button 
-              variant="outline" 
-              onClick={onBack}
-            >
+            <Button variant="outline" onClick={onBack}>
               Back
             </Button>
-            <Button onClick={onNext}>
-              Generate Results
-            </Button>
+            <Button onClick={onNext}>Generate Results</Button>
           </div>
         </CardContent>
       </Card>
     </TooltipProvider>
-  )
+  );
 } 

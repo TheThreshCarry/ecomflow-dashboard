@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { CSVController } from "@/lib/csv-controller"
 import type { InventoryData } from "@/lib/schemas"
-import { InventoryAlgorithm } from "@/lib/algorithm"
 
 interface UploadStepProps {
   onBack: () => void;

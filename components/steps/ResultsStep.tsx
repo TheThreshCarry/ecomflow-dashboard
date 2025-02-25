@@ -4,21 +4,12 @@ import { ThresholdSummary } from "@/components/dashboard/ThresholdSummary"
 import { ParameterAdjustment } from "@/components/dashboard/ParameterAdjustment"
 import { OrdersChart } from "@/components/charts/OrdersChart"
 import { InventoryChart } from "@/components/charts/InventoryChart"
-import { InventoryAlgorithm } from "@/lib/algorithm"
-
-interface ThresholdParams {
-  leadTime: number;
-  safetyStock: number;
-  averageDailySales: number;
-}
+import { useMemo } from "react"
+import { ThresholdParams, Thresholds } from "@/lib/types"
 
 interface ResultsStepProps {
   params: ThresholdParams;
-  thresholds: {
-    low: number;
-    medium: number;
-    high: number;
-  };
+  thresholds: Thresholds;
   chartData: any[];
   ordersData: any[];
   onParamChange: (key: keyof ThresholdParams, value: number) => void;
@@ -37,6 +28,19 @@ export function ResultsStep({
   getBarColor,
   getLeadTimeColor
 }: ResultsStepProps) {
+  // Get the current inventory level from the most recent data point
+  const currentInventoryLevel = useMemo(() => {
+    if (chartData && chartData.length > 0) {
+      // Sort the data by date to get the most recent entry
+      const sortedData = [...chartData].sort((a, b) => 
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+      // Return the inventory level of the most recent entry
+      return sortedData[0].inventory_level;
+    }
+    return undefined;
+  }, [chartData]);
+  
   return (
     <>
       <div className="flex justify-between items-center mb-6">
@@ -56,7 +60,10 @@ export function ResultsStep({
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <ThresholdSummary thresholds={thresholds} />
+            <ThresholdSummary 
+              thresholds={thresholds} 
+              currentLevel={currentInventoryLevel} 
+            />
             <ParameterAdjustment params={params} onParamChange={onParamChange} />
           </div>
         </CardContent>

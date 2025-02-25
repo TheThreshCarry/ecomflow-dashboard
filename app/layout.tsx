@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { InventoryProvider } from './providers'
+import { ThemeProvider } from '@/components/theme-provider'
 
 export const metadata: Metadata = {
   title: 'Inventory Threshold Optimizer',
@@ -14,11 +15,18 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
-        <InventoryProvider>
-          {children}
-        </InventoryProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <InventoryProvider>
+            {children}
+          </InventoryProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

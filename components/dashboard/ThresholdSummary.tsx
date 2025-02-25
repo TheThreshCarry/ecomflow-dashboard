@@ -3,12 +3,13 @@ import { Thresholds } from "@/lib/types"
 
 interface ThresholdSummaryProps {
   thresholds: Thresholds;
+  currentLevel?: number; // Optional current inventory level
 }
 
-export function ThresholdSummary({ thresholds }: ThresholdSummaryProps) {
+export function ThresholdSummary({ thresholds, currentLevel }: ThresholdSummaryProps) {
   // Safe formatting function to handle undefined values
-  const formatNumber = (value: number | undefined, decimals: number = 1): string => {
-    return value !== undefined ? value.toFixed(decimals) : "0.0";
+  const formatNumber = (value: number | undefined, decimals: number = 0): string => {
+    return value !== undefined ? value.toFixed(decimals) : "0";
   };
   
   // Normalize segments for better visualization with minimum visibility
@@ -50,6 +51,19 @@ export function ThresholdSummary({ thresholds }: ThresholdSummaryProps) {
     highSegment = rawHighPercent;
   }
 
+  // Calculate the position of the current level indicator
+  const calculatePositionPercentage = () => {
+    if (currentLevel === undefined || highValue === 0) return null;
+    
+    // Clamp the value to ensure it's within the visible range
+    const clampedLevel = Math.min(Math.max(0, currentLevel), highValue * 1.1);
+    
+    // Calculate percentage based on high threshold (with 10% extra space as in the chart)
+    return (clampedLevel / (highValue * 1.1)) * 100;
+  };
+
+  const currentPositionPercentage = calculatePositionPercentage();
+
   return (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -60,24 +74,30 @@ export function ThresholdSummary({ thresholds }: ThresholdSummaryProps) {
             <span>-</span>
             <span className="font-bold text-warning">{formatNumber(thresholds.medium)}</span>
             <span>-</span>
-            <span className="font-bold text-info">{formatNumber(thresholds.high)}</span>
+            <span className="font-bold text-success">{formatNumber(thresholds.high)}</span>
+            {currentLevel !== undefined && (
+              <>
+                <span className="mx-2">|</span>
+                <span className="font-bold text-foreground">Current: {formatNumber(currentLevel)}</span>
+              </>
+            )}
           </div>
         </div>
-        <div className="w-full bg-muted rounded-full h-6 overflow-hidden flex">
+        <div className="w-full bg-muted rounded-full h-6 overflow-hidden flex relative">
           {/* Low threshold segment */}
           <div 
-            className="bg-destructive h-full rounded-l-full"
+            className="bg-destructive/50 h-full rounded-l-full"
             style={{ width: `${lowSegment}%` }}
           >
             {lowSegment > 10 && (
-              <span className="text-xs text-white flex items-center justify-center h-full px-2 truncate">
+              <span className="text-xs text-foreground flex items-center justify-center h-full px-2 truncate">
                 0-{formatNumber(thresholds.low)}
               </span>
             )}
           </div>
           {/* Medium threshold segment */}
           <div 
-            className="bg-warning h-full"
+            className="bg-warning/50 h-full"
             style={{ width: `${mediumSegment}%` }}
           >
             {mediumSegment > 10 && (
@@ -88,15 +108,30 @@ export function ThresholdSummary({ thresholds }: ThresholdSummaryProps) {
           </div>
           {/* High threshold segment */}
           <div 
-            className="bg-info h-full rounded-r-full"
+            className="bg-success/50 h-full rounded-r-full"
             style={{ width: `${highSegment}%` }}
           >
             {highSegment > 10 && (
-              <span className="text-xs text-white flex items-center justify-center h-full px-2 truncate">
+              <span className="text-xs flex items-center justify-center h-full px-2 truncate">
                 {formatNumber(thresholds.medium)}-{formatNumber(thresholds.high)}
               </span>
             )}
           </div>
+          
+          {/* Current position indicator */}
+          {currentPositionPercentage !== null && (
+            <div 
+              className="absolute top-0 bottom-0 w-1 bg-foreground z-10"
+              style={{ 
+                left: `${currentPositionPercentage}%`,
+                transform: 'translateX(-50%)',
+              }}
+            >
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-[10px] font-bold text-black px-1 py-0.5 bg-background rounded border border-foreground">
+                {formatNumber(currentLevel)}
+              </div>
+            </div>
+          )}
         </div>
         
         <div className="grid grid-cols-3 text-xs mt-2">
@@ -109,7 +144,7 @@ export function ThresholdSummary({ thresholds }: ThresholdSummaryProps) {
             <span>Medium: Prepare to Order</span>
           </div>
           <div>
-            <span className="inline-block w-3 h-3 bg-info rounded-full mr-1"></span>
+            <span className="inline-block w-3 h-3 bg-success rounded-full mr-1"></span>
             <span>High: Monitor Levels</span>
           </div>
         </div>

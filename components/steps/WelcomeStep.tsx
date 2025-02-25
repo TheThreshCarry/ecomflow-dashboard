@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Logo } from "../ui/logo";
 
 interface WelcomeStepProps {
   onNext: () => void;
@@ -8,7 +9,8 @@ interface WelcomeStepProps {
 export function WelcomeStep({ onNext }: WelcomeStepProps) {
   return (
     <Card className="mx-auto max-w-3xl">
-      <CardHeader className="text-center">
+      <CardHeader className="text-center flex flex-col items-center gap-2">
+        <Logo size="large" />
         <CardTitle className="text-2xl">Welcome to Inventory Threshold Optimizer</CardTitle>
         <CardDescription>Optimize your inventory levels with data-driven thresholds</CardDescription>
       </CardHeader>

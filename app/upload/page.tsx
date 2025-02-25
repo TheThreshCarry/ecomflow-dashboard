@@ -6,6 +6,7 @@ import { UploadStep } from "@/components/steps/UploadStep"
 import type { InventoryData } from "@/lib/schemas"
 import { StepIndicator } from "@/components/steps/StepIndicator"
 import { Logo } from "@/components/ui/logo"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 export default function UploadPage() {
   const router = useRouter()
@@ -37,9 +38,12 @@ export default function UploadPage() {
   
   return (
     <div className="container mx-auto p-4 space-y-6">
-      <div className="flex items-center gap-3 mb-8">
-        <Logo size="large" />
-        <h1 className="text-3xl font-bold">Inventory Threshold Optimizer</h1>
+      <div className="flex items-center justify-between gap-3 mb-8">
+        <div className="flex items-center gap-3">
+          <Logo size="large" />
+          <h1 className="text-3xl font-bold">Inventory Threshold Optimizer</h1>
+        </div>
+        <ThemeToggle />
       </div>
       
       {/* Progress indicator */}
