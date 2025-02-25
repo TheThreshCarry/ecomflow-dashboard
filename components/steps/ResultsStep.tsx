@@ -6,6 +6,8 @@ import { OrdersChart } from "@/components/charts/OrdersChart"
 import { InventoryChart } from "@/components/charts/InventoryChart"
 import { ProductOrdersPieChart } from "@/components/charts/ProductOrdersPieChart"
 import { ProductOrdersBarChart } from "@/components/charts/ProductOrdersBarChart"
+import { LeadTimeVariationChart } from "@/components/charts/LeadTimeVariationChart"
+import { StockToSalesRatioChart } from "@/components/charts/StockToSalesRatioChart"
 import { MetricCard } from "@/components/dashboard/MetricCard"
 import { useMemo, useState } from "react"
 import { ThresholdParams, Thresholds } from "@/lib/types"
@@ -21,6 +23,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ExportFormat } from "@/app/results/page"
+import { SeasonalProductDemandChart } from "@/components/charts/SeasonalProductDemandChart"
+import { TimeProductDistributionChart } from "@/components/charts/TimeProductDistributionChart"
 
 interface ResultsStepProps {
   params: ThresholdParams;
@@ -126,23 +130,30 @@ export function ResultsStep({
               maxDate={maxDate}
             />
             <div className="flex">
-              <Button 
-                onClick={() => exportThresholds('pdf' as ExportFormat)}
+              <Button
+                onClick={() => exportThresholds("pdf" as ExportFormat)}
                 className="rounded-r-none"
               >
                 <Printer className="h-4 w-4 mr-2" /> Export Thresholds
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="default" className="px-2 rounded-l-none border-l border-primary-foreground">
+                  <Button
+                    variant="default"
+                    className="px-2 rounded-l-none border-l border-primary-foreground"
+                  >
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => exportThresholds('text' as ExportFormat)}>
+                  <DropdownMenuItem
+                    onClick={() => exportThresholds("text" as ExportFormat)}
+                  >
                     Export as Text
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => exportThresholds('pdf' as ExportFormat)}>
+                  <DropdownMenuItem
+                    onClick={() => exportThresholds("pdf" as ExportFormat)}
+                  >
                     <Printer className="h-4 w-4 mr-2" /> Export as PDF
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -151,26 +162,33 @@ export function ResultsStep({
           </div>
         </div>
       </div>
-      
+
       {/* Collapsible Summary Card */}
       <Collapsible open={showThresholdSummary} className="mb-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle>Threshold Summary</CardTitle>
-              <CardDescription>Calculated inventory thresholds based on your data and configured parameters.</CardDescription>
+              <CardDescription>
+                Calculated inventory thresholds based on your data and
+                configured parameters.
+              </CardDescription>
             </div>
             <CollapsibleTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 className="gap-1"
                 onClick={() => setShowThresholdSummary(!showThresholdSummary)}
               >
                 {showThresholdSummary ? (
-                  <>Hide Details <ChevronUp className="h-4 w-4" /></>
+                  <>
+                    Hide Details <ChevronUp className="h-4 w-4" />
+                  </>
                 ) : (
-                  <>Show Details <ChevronDown className="h-4 w-4" /></>
+                  <>
+                    Show Details <ChevronDown className="h-4 w-4" />
+                  </>
                 )}
               </Button>
             </CollapsibleTrigger>
@@ -178,22 +196,28 @@ export function ResultsStep({
           <CollapsibleContent>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <ThresholdSummary 
-                  thresholds={thresholds} 
-                  currentLevel={currentInventoryLevel} 
+                <ThresholdSummary
+                  thresholds={thresholds}
+                  currentLevel={currentInventoryLevel}
                 />
-                <ParameterAdjustment params={params} onParamChange={onParamChange} />
+                <ParameterAdjustment
+                  params={params}
+                  onParamChange={onParamChange}
+                />
               </div>
             </CardContent>
           </CollapsibleContent>
         </Card>
       </Collapsible>
-      
+
       {/* Key Metrics */}
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">Key Metrics</h3>
       </div>
-      <p className="text-sm text-muted-foreground mb-4">Essential performance indicators calculated from your inventory and order data.</p>
+      <p className="text-sm text-muted-foreground mb-4">
+        Essential performance indicators calculated from your inventory and
+        order data.
+      </p>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <MetricCard
           title="Average Daily Orders"
@@ -224,45 +248,91 @@ export function ResultsStep({
           icon={<Clock size={18} />}
           data={chartData.map((item, index) => {
             const matchingOrderData = ordersData.find(
-              orderItem => orderItem.date === item.date
+              (orderItem) => orderItem.date === item.date
             );
             return {
               ...item,
-              order_fulfilled: matchingOrderData ? 
-                Number(item.inventory_level) >= Number(matchingOrderData.orders) : true
+              order_fulfilled: matchingOrderData
+                ? Number(item.inventory_level) >=
+                  Number(matchingOrderData.orders)
+                : true,
             };
           })}
-          valueExtractor={(item) => item.order_fulfilled ? 100 : 0}
+          valueExtractor={(item) => (item.order_fulfilled ? 100 : 0)}
           formatValue={(value) => `${value.toFixed(0)}%`}
           period={periodDays.toString()}
         />
       </div>
-      
+
       {/* Charts Section Title */}
       <h3 className="text-xl font-semibold">Performance Analytics</h3>
-      <p className="text-sm text-muted-foreground mb-4">Visual representation of your inventory movement and order patterns over time.</p>
-      
+      <p className="text-sm text-muted-foreground mb-4">
+        Visual representation of your inventory movement and order patterns over
+        time.
+      </p>
+
       {/* Chart Row - 2 columns on desktop, 1 column on mobile */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <OrdersChart 
-          data={filteredOrdersData} 
-          getBarColor={getBarColor} 
-          defaultLeadTime={params.leadTime} 
-        />
-        <InventoryChart 
-          data={filteredChartData} 
+        <InventoryChart
+          data={filteredChartData}
           getBarColor={getBarColor}
           getLeadTimeColor={getLeadTimeColor}
         />
+        <OrdersChart
+          data={filteredOrdersData}
+          getBarColor={getBarColor}
+          defaultLeadTime={params.leadTime}
+        />
       </div>
-      
+
+      {/* New Analytics Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <LeadTimeVariationChart
+          data={filteredOrdersData}
+          getLeadTimeColor={getLeadTimeColor}
+        />
+        <StockToSalesRatioChart
+          data={filteredOrdersData}
+          inventoryData={filteredChartData}
+        />
+      </div>
+
       {/* Product Analysis Row */}
       <h3 className="text-xl font-semibold">Product Analysis</h3>
-      <p className="text-sm text-muted-foreground mb-4">Breakdown of order distribution by product to identify top performers and sales patterns.</p>
+      <p className="text-sm text-muted-foreground mb-4">
+        Breakdown of order distribution by product to identify top performers
+        and sales patterns.
+      </p>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <ProductOrdersPieChart data={filteredOrdersData} />
         <ProductOrdersBarChart data={filteredOrdersData} />
       </div>
+
+      {/* Seasonal Product Demand */}
+      {/* <div className="mb-6">
+        <SeasonalProductDemandChart data={filteredOrdersData} />
+      </div> */}
+      
+      {/* Product Distribution Section */}
+      <div className="mt-8">
+        <div className="mb-4">
+          <h2 className="text-2xl font-semibold">Product Distribution Over Time</h2>
+          <p className="text-muted-foreground">
+            Percentage breakdown of orders and inventory across various time periods
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <TimeProductDistributionChart 
+            data={filteredOrdersData}
+            type="orders"
+          />
+          <TimeProductDistributionChart 
+            data={filteredChartData} 
+            type="inventory"
+          />
+        </div>
+      </div>
     </>
-  )
+  );
 } 

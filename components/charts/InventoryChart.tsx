@@ -162,7 +162,7 @@ export function InventoryChart({
                 name="Low Zone"
                 dataKey="lowThreshold"
                 fill="hsl(var(--destructive))" // Red for low threshold zone
-                fillOpacity={isDarkMode ? 0.1 : 0.3}
+                fillOpacity={isDarkMode ? 0.2 : 0.3}
                 stroke="none"
                 stackId="1"
               />
@@ -173,7 +173,7 @@ export function InventoryChart({
                   datum.mediumThreshold - datum.lowThreshold
                 }
                 fill="hsl(var(--warning))" // Yellow for medium threshold zone
-                fillOpacity={isDarkMode ? 0.1 : 0.3}
+                fillOpacity={isDarkMode ? 0.2 : 0.3}
                 stroke="none"
                 stackId="1"
               />
@@ -186,7 +186,7 @@ export function InventoryChart({
                   return maxValue - datum.mediumThreshold;
                 }}
                 fill="hsl(var(--success))" // Green for high threshold zone
-                fillOpacity={isDarkMode ? 0.1 : 0.3}
+                fillOpacity={isDarkMode ? 0.2 : 0.3}
                 stroke="none"
                 stackId="1"
               />
@@ -199,7 +199,7 @@ export function InventoryChart({
               dataKey="inventory_level"
               stroke="hsl(var(--foreground))"
               strokeWidth={3}
-              dot={true}
+              dot={false}
               activeDot={{ r: 6 }}
             />
           </ComposedChart>

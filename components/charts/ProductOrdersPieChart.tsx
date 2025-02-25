@@ -10,12 +10,10 @@ interface ProductOrdersPieChartProps {
 
 // Predefined set of colors for the pie chart slices ( shades of green)
 const COLORS = [
-  "#008000", // Dark green
-  "#00A000", // Slightly lighter green
-  "#00C000", // Lighter green
-  "#00D000", // Lighter green
-  "#00E000", // Very light green
-  "#00FF00", // Bright green
+  "hsl(var(--chart-1))", // Bright green
+  "hsl(var(--chart-2))", // Darker green
+  "hsl(var(--chart-3))", // Lighter green
+  "hsl(var(--chart-4))", // Very light green
 ]
   
 
