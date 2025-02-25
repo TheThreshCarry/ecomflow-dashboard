@@ -209,7 +209,7 @@ flowchart TD
 
 ```bash
 # Clone the repository
-git clone -b v1.0 https://github.com/yourusername/inventory-dashboard.git
+git clone -b v1.0 https://github.com/TheThreshCarry/ecomflow-dashboard.git
 
 # Navigate to project directory
 cd inventory-dashboard
