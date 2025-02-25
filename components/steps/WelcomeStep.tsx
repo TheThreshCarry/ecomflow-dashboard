@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Logo } from "../ui/logo";
+import { Separator } from "@/components/ui/separator";
 
 interface WelcomeStepProps {
   onNext: () => void;
@@ -35,6 +36,10 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
             <li><code>orders</code>: Order quantity for the day</li>
             <li><code>lead_time_days</code>: Lead time for restocking</li>
           </ul>
+          
+          <p className="text-sm mt-3 p-2 bg-muted rounded border border-border">
+            <strong>Tip:</strong> For accurate analysis, provide at least 30 days of historical data with daily inventory levels and orders.
+          </p>
         </div>
         
         <Button 

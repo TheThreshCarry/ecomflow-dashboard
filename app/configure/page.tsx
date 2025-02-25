@@ -1,26 +1,29 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useInventory } from "../providers"
 import { ConfigureStep } from "@/components/steps/ConfigureStep"
-import { ThresholdParams } from "@/lib/types"
+import { useInventory } from "../providers"
 import { StepIndicator } from "@/components/steps/StepIndicator"
-import { Logo } from "@/components/ui/logo"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { Logo } from "@/components/ui/logo"
+import { Footer } from "@/components/ui/footer"
+import { ThresholdParams } from "@/lib/types"
 
 export default function ConfigurePage() {
   const router = useRouter()
   const { 
-    data, 
+    data,
     params, 
-    thresholds, 
-    setParams, 
-    calculateThresholds
+    thresholds,
+    setParams,
+    calculateThresholds,
+    error,
+    setError,
   } = useInventory()
   
-  // Redirect to upload page if no data is available
+  // Redirect to upload if no data is available
   if (data.length === 0) {
-    router.push("/upload")
+    router.push("/")
     return null
   }
   
@@ -29,6 +32,7 @@ export default function ConfigurePage() {
   }
   
   const handleNext = () => {
+    calculateThresholds()
     router.push("/results")
   }
   
@@ -44,7 +48,7 @@ export default function ConfigurePage() {
   }
   
   return (
-    <div className="container mx-auto p-4 space-y-6">
+    <div className="container mx-auto p-4 min-h-screen flex flex-col">
       <div className="flex items-center justify-between gap-3 mb-8">
         <div className="flex items-center gap-3">
           <Logo size="large" />
@@ -56,14 +60,18 @@ export default function ConfigurePage() {
       {/* Progress indicator */}
       <StepIndicator />
       
-      <ConfigureStep 
-        onBack={handleBack}
-        onNext={handleNext}
-        params={params}
-        thresholds={thresholds}
-        onParamChange={handleParamChange}
-        onCalculate={handleCalculate}
-      />
+      <div className="mx-auto w-full max-w-3xl">
+        <ConfigureStep 
+          onBack={handleBack}
+          onNext={handleNext}
+          params={params}
+          thresholds={thresholds}
+          onParamChange={handleParamChange}
+          onCalculate={handleCalculate}
+        />
+      </div>
+      
+      <Footer />
     </div>
   )
 } 

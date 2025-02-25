@@ -68,7 +68,15 @@ export class InventoryThresholdCalculator {
   }
 
   private calculateSafetyStock(): number {
-    return this.zScore * this.demandStdDev * Math.sqrt(this.leadTime);
+    // Calculate standard safety stock
+    const baseStock = this.zScore * this.demandStdDev * Math.sqrt(this.leadTime);
+    
+    // Apply safety stock percentage adjustment
+    // The higher the percentage, the more safety stock will be added
+    const safetySockAdjustment = (this.safetyStockPercentage / 100);
+    
+    // Return the adjusted safety stock
+    return baseStock * (1 + safetySockAdjustment);
   }
 
   private calculateReorderPoint(leadTimeDemand: number, safetyStock: number): number {

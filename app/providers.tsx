@@ -86,7 +86,10 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
       // Create orders data
       setOrdersData(data.map(item => ({
         date: item.date,
-        orders: item.orders
+        orders: item.orders,
+        product_id: item.product_id,
+        product_name: item.product_name,
+        lead_time_days: item.lead_time_days
       })))
       
       // Update average daily sales and standard deviation if they weren't provided

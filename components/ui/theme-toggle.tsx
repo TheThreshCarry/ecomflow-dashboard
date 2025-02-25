@@ -8,16 +8,21 @@ import { Label } from "@/components/ui/label"
 
 export function ThemeToggle() {
   const { setTheme, theme } = useTheme()
-  const [mounted, setMounted] = React.useState(false)
+  const [mounted, setMounted] = React.useState(false);
+  const [isDarkMode, setIsDarkMode] = React.useState(false);
 
   // After mounting, we can safely show the UI
   React.useEffect(() => {
     setMounted(true)
   }, [])
+  React.useEffect(() => {
+    setIsDarkMode(theme === "dark")
+  }, [theme])
 
   const handleChange = (checked: boolean) => {
     setTheme(checked ? "dark" : "light")
   }
+
 
   // Don't render anything until mounted to prevent hydration mismatch
   if (!mounted) {
@@ -34,7 +39,7 @@ export function ThemeToggle() {
       </div>
       <Switch 
         id="theme-toggle" 
-        checked={theme === "dark"}
+        checked={isDarkMode}
         onCheckedChange={handleChange}
       />
     </div>

@@ -2,6 +2,9 @@ import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGri
 import { ChartCard, ChartContainer, ChartHeader } from "@/components/ui/chart"
 import { CardTitle, CardDescription } from "@/components/ui/card"
 import { useTheme } from "next-themes";
+import { averageTimeSeriesData } from "@/lib/utils";
+import { chartConfig } from "@/lib/chart-config";
+import React, { useMemo } from "react";
 
 interface OrdersChartProps {
   data: any[];
@@ -10,8 +13,21 @@ interface OrdersChartProps {
 }
 
 export function OrdersChart({ data, getBarColor, defaultLeadTime }: OrdersChartProps) {
-
   const theme = useTheme();
+
+  // Process data to ensure orders are numbers, not strings with leading zeros
+  // And average out data points if there are too many
+  const processedData = useMemo(() => {
+    // First process the raw data to ensure orders are numbers
+    const normalizedData = data.map(item => ({
+      ...item,
+      orders: Number(item.orders)
+    }));
+    
+    // Then apply averaging if there are too many data points
+    return averageTimeSeriesData(normalizedData, 'date', chartConfig.maxTimeSeriesPoints);
+  }, [data]);
+
   const OrdersTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const leadTimeDays = payload[0].payload.lead_time_days;
@@ -42,12 +58,6 @@ export function OrdersChart({ data, getBarColor, defaultLeadTime }: OrdersChartP
     }
     return null
   }
-
-  // Process data to ensure orders are numbers, not strings with leading zeros
-  const processedData = data.map(item => ({
-    ...item,
-    orders: Number(item.orders)
-  }));
 
   return (
     <ChartCard>

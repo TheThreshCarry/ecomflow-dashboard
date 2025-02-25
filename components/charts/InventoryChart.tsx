@@ -1,11 +1,21 @@
-import { ComposedChart, Line, Area, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from "recharts"
-import { ChartCard, ChartContainer, ChartHeader } from "@/components/ui/chart"
-import { CardTitle, CardDescription } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { useState, useMemo } from "react"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { useTheme } from "next-themes"
+import {
+  ComposedChart,
+  Line,
+  Area,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Legend,
+} from "recharts";
+import { ChartCard, ChartContainer, ChartHeader } from "@/components/ui/chart";
+import { CardTitle, CardDescription } from "@/components/ui/card";
+import { useState, useMemo } from "react";
+import { useTheme } from "next-themes";
+import { averageTimeSeriesData } from "@/lib/utils";
+import { chartConfig } from "@/lib/chart-config";
+import { Thresholds } from "@/lib/types";
 
 interface InventoryChartProps {
   data: any[];
@@ -13,44 +23,70 @@ interface InventoryChartProps {
   getLeadTimeColor: (leadTime: number) => string;
 }
 
-export function InventoryChart({ data, getBarColor, getLeadTimeColor }: InventoryChartProps) {
-  const [showLeadTimeBackground, setShowLeadTimeBackground] = useState(true)
-  const isDarkMode = useTheme().theme === "dark"
+export function InventoryChart({
+  data,
+  getBarColor,
+  getLeadTimeColor,
+}: InventoryChartProps) {
+  const isDarkMode = useTheme().theme === "dark";
 
-  // Process data to include lead time background values
+  // Process data to include lead time background values and average if too many points
   const processedData = useMemo(() => {
     if (!data || data.length === 0) return [];
 
     // First, categorize lead times into our defined ranges
-    const categorizedData = data.map(item => {
+    const categorizedData = data.map((item) => {
       const leadTime = item.lead_time_days;
       let category = "";
-      
+
       if (leadTime <= 2) category = "fast"; // 0-2 days (fast)
       else if (leadTime <= 5) category = "standard"; // 3-5 days (standard)
       else if (leadTime <= 10) category = "slow"; // 6-10 days (slow)
       else category = "verySlow"; // >10 days (very slow)
-      
+
       return {
         ...item,
-        leadTimeCategory: category
+        leadTimeCategory: category,
       };
     });
 
     // Calculate the max inventory value for chart scaling
-    const maxInventory = Math.max(...data.map(item => item.inventory_level)) * 1.1;
-    
+    const maxInventory =
+      Math.max(...data.map((item) => item.inventory_level)) * 1.1;
+
     // For each data point, add properties for lead time area charts
-    return categorizedData.map(item => {
+    const preparedData = categorizedData.map((item) => {
       return {
         ...item,
         // Set inventory value for each lead time category
         // Only one of these will be set, allowing us to stack them
         fastLeadTime: item.leadTimeCategory === "fast" ? maxInventory : 0,
-        standardLeadTime: item.leadTimeCategory === "standard" ? maxInventory : 0,
+        standardLeadTime:
+          item.leadTimeCategory === "standard" ? maxInventory : 0,
         slowLeadTime: item.leadTimeCategory === "slow" ? maxInventory : 0,
-        verySlowLeadTime: item.leadTimeCategory === "verySlow" ? maxInventory : 0,
+        verySlowLeadTime:
+          item.leadTimeCategory === "verySlow" ? maxInventory : 0,
       };
+    });
+    
+    // Apply averaging if there are too many data points
+    const averaged = averageTimeSeriesData(preparedData, 'date', chartConfig.maxTimeSeriesPoints);
+    
+    // Format numeric values to integers if they have no decimal part
+    return averaged.map(item => {
+      const formattedItem = { ...item };
+      
+      // Format numeric fields to integers if they don't have decimal parts
+      Object.keys(item).forEach(key => {
+        if (typeof item[key] === 'number') {
+          // Check if the number has a decimal part
+          formattedItem[key] = Number.isInteger(item[key]) ? 
+            item[key] : // Keep as number, no need to convert
+            parseFloat(item[key].toFixed(1));
+        }
+      });
+      
+      return formattedItem;
     });
   }, [data]);
 
@@ -61,20 +97,49 @@ export function InventoryChart({ data, getBarColor, getLeadTimeColor }: Inventor
       return (
         <div className="bg-background/95 border rounded-lg shadow-lg p-3">
           <p className="font-medium">{new Date(label).toLocaleDateString()}</p>
-          <p className="text-primary">Inventory: {Number(item.inventory_level).toFixed(0)}</p>
+          <p className="text-primary">
+            Inventory: {Number(item.inventory_level).toFixed(0)}
+          </p>
           <p className="font-medium" style={{ color: getBarColor(leadTime) }}>
             Lead Time: {leadTime} days
-            {leadTime <= 2 ? " (Fast)" : 
-             leadTime <= 5 ? " (Standard)" : 
-             leadTime <= 10 ? " (Slow)" : 
-             " (Very slow)"}
+            {leadTime <= 2
+              ? " (Fast)"
+              : leadTime <= 5
+              ? " (Standard)"
+              : leadTime <= 10
+              ? " (Slow)"
+              : " (Very slow)"}
           </p>
-          {item.dangerZone && <p className="text-destructive font-medium">Below Low Threshold!</p>}
+          {item.dangerZone && (
+            <p className="text-destructive font-medium">Below Low Threshold!</p>
+          )}
         </div>
       );
     }
     return null;
-  }
+  };
+
+  // Extract thresholds from the first data point (or use defaults)
+  const thresholds: Thresholds = useMemo(() => {
+    if (!data || data.length === 0) return { 
+      low: 0, 
+      medium: 0, 
+      high: 0,
+      leadTimeDemand: 0,
+      safetyStock: 0,
+      reorderPoint: 0
+    };
+    
+    const firstPoint = data[0];
+    return {
+      low: firstPoint.lowThreshold || 0,
+      medium: firstPoint.mediumThreshold || 0,
+      high: firstPoint.highThreshold || 0,
+      leadTimeDemand: firstPoint.leadTimeDemand || 0,
+      safetyStock: firstPoint.safetyStock || 0,
+      reorderPoint: firstPoint.reorderPoint || 0
+    };
+  }, [data]);
 
   return (
     <ChartCard>
@@ -82,21 +147,11 @@ export function InventoryChart({ data, getBarColor, getLeadTimeColor }: Inventor
         <div>
           <CardTitle>Inventory</CardTitle>
           <CardDescription>
-            Inventory levels with background color representing lead time values / thresholds
+            Inventory levels with background color representing thresholds
           </CardDescription>
         </div>
-        <div className="flex items-center gap-2">
-          <Label htmlFor="lead-time-bg-toggle" className="cursor-pointer">
-            Show {" "}
-            {showLeadTimeBackground ? "Lead Time" : "Thresholds"}
-          </Label>
-          <Switch
-            id="lead-time-bg-toggle"
-            checked={showLeadTimeBackground}
-            onCheckedChange={setShowLeadTimeBackground}
-          />
-        </div>
       </ChartHeader>
+      
       <ChartContainer className="h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart
@@ -123,84 +178,42 @@ export function InventoryChart({ data, getBarColor, getLeadTimeColor }: Inventor
             <Tooltip content={<InventoryTooltip />} />
             <Legend />
 
-            {/* Lead time backgrounds as area charts */}
-            {showLeadTimeBackground && (
-              <>
-                <Area
-                  type="monotone"
-                  name="Fast Lead Time (0-2 days)"
-                  dataKey="fastLeadTime"
-                  fill="rgba(0, 255, 0)" // Green for fast lead time
-                  fillOpacity={isDarkMode ? 0.1 : 0.2}
-                  stroke="none"
-                  stackId="2"
-                />
-                <Area
-                  type="monotone"
-                  name="Standard Lead Time (3-5 days)"
-                  dataKey="standardLeadTime"
-                  fill="rgba(255, 255, 0)" // Yellow for standard lead time
-                  fillOpacity={isDarkMode ? 0.1 : 0.2}
-                  stroke="none"
-                  stackId="2"
-                />
-                <Area
-                  type="monotone"
-                  name="Slow Lead Time (6-10 days)"
-                  dataKey="slowLeadTime"
-                  fill="rgba(255, 165, 0)" // Orange for slow lead time
-                  fillOpacity={isDarkMode ? 0.1 : 0.2}
-                  stroke="none"
-                  stackId="2"
-                />
-                <Area
-                  type="monotone"
-                  name="Very Slow Lead Time (>10 days)"
-                  dataKey="verySlowLeadTime"
-                  fill="rgba(255, 0, 0)" // Red for very slow lead time
-                  fillOpacity={isDarkMode ? 0.1 : 0.2}
-                  stroke="none"
-                  stackId="2"
-                />
-              </>
-            )}
-
             {/* Threshold zones as stacked areas */}
-            {!showLeadTimeBackground && (
-              <>
-                <Area
-                  type="monotone"
-                  name="Low Zone"
-                  dataKey="lowThreshold"
-                  fill="rgba(255, 0, 0)" // Red for low threshold zone
-                  fillOpacity={isDarkMode ? 0.1 : 0.2}
-                  stroke="none"
-                  stackId="1"
-                />
-                <Area
-                  type="monotone"
-                  name="Medium Zone"
-                  dataKey={(datum) =>
-                    datum.mediumThreshold - datum.lowThreshold
-                  }
-                  fill="rgba(255, 200, 0)" // Yellow for medium threshold zone
-                  fillOpacity={isDarkMode ? 0.1 : 0.2}
-                  stroke="none"
-                  stackId="1"
-                />
-                <Area
-                  type="monotone"
-                  name="High Zone"
-                  dataKey={(datum) =>
-                    datum.highThreshold - datum.mediumThreshold
-                  }
-                  fill="rgba(0, 255, 0)" // Green for high threshold zone
-                  fillOpacity={isDarkMode ? 0.1 : 0.2}
-                  stroke="none"
-                  stackId="1"
-                />
-              </>
-            )}
+            <>
+              <Area
+                type="monotone"
+                name="Low Zone"
+                dataKey="lowThreshold"
+                fill="rgba(255, 0, 0)" // Red for low threshold zone
+                fillOpacity={isDarkMode ? 0.1 : 0.2}
+                stroke="none"
+                stackId="1"
+              />
+              <Area
+                type="monotone"
+                name="Medium Zone"
+                dataKey={(datum) =>
+                  datum.mediumThreshold - datum.lowThreshold
+                }
+                fill="rgba(255, 200, 0)" // Yellow for medium threshold zone
+                fillOpacity={isDarkMode ? 0.1 : 0.2}
+                stroke="none"
+                stackId="1"
+              />
+              <Area
+                type="monotone"
+                name="High Zone"
+                // Modified to always go to max value
+                dataKey={(datum) => {
+                  const maxValue = Math.max(...data.map(d => d.inventory_level)) * 1.1;
+                  return maxValue - datum.mediumThreshold;
+                }}
+                fill="rgba(0, 255, 0)" // Green for high threshold zone
+                fillOpacity={isDarkMode ? 0.1 : 0.2}
+                stroke="none"
+                stackId="1"
+              />
+            </>
 
             {/* Inventory line */}
             <Line
@@ -217,4 +230,4 @@ export function InventoryChart({ data, getBarColor, getLeadTimeColor }: Inventor
       </ChartContainer>
     </ChartCard>
   );
-} 
+}

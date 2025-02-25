@@ -4,9 +4,9 @@ import { useRouter } from "next/navigation"
 import { useInventory } from "../providers"
 import { ResultsStep } from "@/components/steps/ResultsStep"
 import { ThresholdParams } from "@/lib/types"
-import { StepIndicator } from "@/components/steps/StepIndicator"
 import { Logo } from "@/components/ui/logo"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { Footer } from "@/components/ui/footer"
 
 export default function ResultsPage() {
   const router = useRouter()
@@ -22,7 +22,7 @@ export default function ResultsPage() {
   
   // Redirect to upload page if no data is available
   if (data.length === 0) {
-    router.push("/upload")
+    router.push("/")
     return null
   }
   
@@ -101,7 +101,7 @@ Export Date: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString(
   }
   
   return (
-    <div className="container mx-auto p-4 space-y-6">
+    <div className="container mx-auto p-4 min-h-screen flex flex-col">
       <div className="flex items-center justify-between gap-3 mb-8">
         <div className="flex items-center gap-3">
           <Logo size="large" />
@@ -110,19 +110,18 @@ Export Date: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString(
         <ThemeToggle />
       </div>
       
-      {/* Progress indicator */}
-      <StepIndicator />
+        <ResultsStep 
+          params={params}
+          thresholds={thresholds}
+          chartData={chartData}
+          ordersData={ordersData}
+          onParamChange={handleParamChange}
+          exportThresholds={exportThresholds}
+          getBarColor={getBarColor}
+          getLeadTimeColor={getLeadTimeColor}
+        />
       
-      <ResultsStep 
-        params={params}
-        thresholds={thresholds}
-        chartData={chartData}
-        ordersData={ordersData}
-        onParamChange={handleParamChange}
-        exportThresholds={exportThresholds}
-        getBarColor={getBarColor}
-        getLeadTimeColor={getLeadTimeColor}
-      />
+      <Footer />
     </div>
   )
 } 

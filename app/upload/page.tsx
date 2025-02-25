@@ -7,6 +7,7 @@ import type { InventoryData } from "@/lib/schemas"
 import { StepIndicator } from "@/components/steps/StepIndicator"
 import { Logo } from "@/components/ui/logo"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { Footer } from "@/components/ui/footer"
 
 export default function UploadPage() {
   const router = useRouter()
@@ -37,7 +38,7 @@ export default function UploadPage() {
   }
   
   return (
-    <div className="container mx-auto p-4 space-y-6">
+    <div className="container mx-auto p-4 min-h-screen flex flex-col">
       <div className="flex items-center justify-between gap-3 mb-8">
         <div className="flex items-center gap-3">
           <Logo size="large" />
@@ -49,13 +50,17 @@ export default function UploadPage() {
       {/* Progress indicator */}
       <StepIndicator />
       
-      <UploadStep 
-        onBack={handleBack}
-        onNext={handleContinueClick}
-        onFileValidated={handleFileValidated}
-        setError={setError}
-        error={error}
-      />
+      <div className="mx-auto w-full max-w-3xl">
+        <UploadStep 
+          onBack={handleBack}
+          onNext={handleContinueClick}
+          onFileValidated={handleFileValidated}
+          setError={setError}
+          error={error}
+        />
+      </div>
+      
+      <Footer />
     </div>
   )
 } 
